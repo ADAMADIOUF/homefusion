@@ -44,12 +44,16 @@ const propertySchema = new mongoose.Schema(
         type: String,
       },
     ],
+    featured: {
+      type: Boolean,
+      default: false,
+    },
     coordinates: {
       type: {
         type: String,
         default: 'Point',
       },
-      coordinates: [Number], 
+      coordinates: [Number],
     },
     agent: {
       type: mongoose.Schema.Types.ObjectId,

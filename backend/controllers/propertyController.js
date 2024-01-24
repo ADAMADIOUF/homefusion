@@ -15,6 +15,7 @@ const createProperty = asyncHandler(async (req, res) => {
     images,
     agent,
     coordinates,
+    featured,
   } = req.body
 
   const property = new Property({
@@ -30,6 +31,7 @@ const createProperty = asyncHandler(async (req, res) => {
     images,
     agent,
     coordinates,
+    featured,
   })
 
   try {
