@@ -1,5 +1,5 @@
 // postApiSlice.js
-import { PROPRIETIES_URL, UPLOAD_URL ,PAYMENTSRENT_URL} from '../constants'
+import { PROPRIETIES_URL, UPLOAD_URL ,PAYMENTSRENT_URL, UPLOAD_PROPRIETY_URL} from '../constants'
 import { apiSlice } from './apiSlice'
 export const proprietiesApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -24,6 +24,14 @@ export const proprietiesApiSlice = apiSlice.injectEndpoints({
 
       invalidatesTags: ['Proprieties'],
     }),
+    updatePropriety: builder.mutation({
+      query: (data) => ({
+        url: `${PROPRIETIES_URL}/${data.productId}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Proprieties'],
+    }),
     deletePropriety: builder.mutation({
       query: (productId) => ({
         url: `${PROPRIETIES_URL}/${productId}`,
@@ -37,7 +45,13 @@ export const proprietiesApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-
+    uploadProprietyImage: builder.mutation({
+      query: (data) => ({
+        url: `${UPLOAD_PROPRIETY_URL}`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
     savePaymentDetails: builder.mutation({
       query: (paymentDetails) => ({
         url: PAYMENTSRENT_URL,
@@ -51,7 +65,9 @@ export const proprietiesApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetPropertiesQuery,
   useGetProprietiesByIdQuery,
-  useCreateProprietyMutation,  useDeleteProprietyMutation,
+  useCreateProprietyMutation,
+  useUpdateProprietyMutation,  useDeleteProprietyMutation,
+  useUploadProprietyImageMutation,
   useUploadPostImageMutation,
   useSavePaymentDetailsMutation
 } = proprietiesApiSlice

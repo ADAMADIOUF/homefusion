@@ -40,6 +40,7 @@ import AdminRoute from './components/AdminRoute';
 import ProprietyList from './pages/ProprietyListAdmin';
 import MaintenanceRequestForm from './pages/MaintenanceRequestForm';
 import ProprietyListAdmin from './pages/ProprietyListAdmin';
+import ProprietyAdminEdit from './pages/ProprietyAdminEdit';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
@@ -71,6 +72,10 @@ const router = createBrowserRouter(
       </Route>
       <Route path='' element={<AdminRoute />}>
         <Route path='/admin/proprietyList' element={<ProprietyListAdmin />} />
+        <Route
+          path='/admin/property/:id/edit'
+          element={<ProprietyAdminEdit />}
+        />
       </Route>
     </Route>
   )

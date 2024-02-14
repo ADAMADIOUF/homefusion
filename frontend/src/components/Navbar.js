@@ -10,9 +10,6 @@ import { logout } from '../slices/authSlice'
 import { useLogoutMutation } from '../slices/usersApiSlice'
 const Navbar = () => {
   const isMenuOpen = useSelector((state) => state.toggle.isMenuOpen)
-  
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-
   const handleToggleMenu = () => {
     dispatch(toggleMenu())
   }
@@ -38,13 +35,16 @@ const logoutHandler = async () => {
           <img src={logo} alt='Logo' />
         </Link>
       </div>
+      <ul>
+        <li>About</li>
+        <li>
+          <Link to={`/contact`}>Contact</Link>
+        </li>
+        <li>
+          <Link to={`/properties`}>Properties</Link>
+        </li>
+      </ul>
       <div className={`menu ${isMenuOpen ? 'active' : ''}`}>
-        <ul>
-          <li>About</li>
-          <li>
-            <Link to={`/contact`}>Contact</Link>
-          </li>
-        </ul>
         {userInfo ? (
           <div className='navbar__dropdown'>
             <div className='navbar__username'>{userInfo?.firstName}</div>

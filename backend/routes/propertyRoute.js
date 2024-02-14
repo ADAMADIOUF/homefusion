@@ -5,6 +5,7 @@ import {
   deletePropriety,
   getProperties,
   getPropertyById,
+  updateProperty,
 } from '../controllers/propertyController.js'
 import { admin, protect } from '../middleware/authMiddleware.js'
 
@@ -13,10 +14,10 @@ import { admin, protect } from '../middleware/authMiddleware.js'
 // @access  Public
 router.route('/').get(getProperties)
 router.route('/').post(protect,admin,createProperty)
-router.route('/').delete(protect, admin, deletePropriety)
-// @desc    Fetch single property
-// @route   GET /api/properties/:id
-// @access  Public
-router.route('/:id').get(getPropertyById)
+router
+  .route(`/:id`)
+  .get(getPropertyById)
+  .put(protect,admin,updateProperty)
+  .delete(protect, admin, deletePropriety)
 
 export default router

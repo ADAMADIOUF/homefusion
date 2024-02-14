@@ -7,5 +7,7 @@ export const CONTACT_MAINTENANCE_URL = `/api/form/submit-maintenance`
 
 export const USERS_URL = `/api/users`
 export const UPLOAD_URL = `/api/upload`
+export const UPLOAD_PROPRIETY_URL = `/api/uploadPropriety`
+
 
 export const PAYMENTSRENT_URL = `/api/payment-details`

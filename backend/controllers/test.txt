@@ -1,0 +1,40 @@
+const {
+      title,
+      description,
+      price,
+      bedrooms,
+      bathrooms,
+      type,
+      status,
+      images,
+      featured,
+      address,
+      // Any other fields you want to update
+    } = req.body
+
+    // Find the property by ID
+    let property = await Property.findById(id)
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' })
+    }
+
+    // Update the property fields
+    property.title = title
+    property.description = description
+    property.price = price
+    property.bedrooms = bedrooms
+    property.bathrooms = bathrooms
+ 
+    property.type = type
+    property.status = status
+    property.images = images
+    property.featured = featured
+    property.address = address
+    // Update any other fields as needed
+
+    // Save the updated property
+    await property.save()
+
+    res.json({ message: 'Property updated successfully', property })
+  

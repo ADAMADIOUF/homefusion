@@ -10,6 +10,8 @@ import agentRoutes from './routes/agentRoute.js'
 import reviewRoutes from './routes/reviewRoute.js'
 import contactRoute from './routes/contactRoute.js'
 import uploadRoutes from './routes/uploadRoutes.js'
+import uploadProprietyRoutes from './routes/uploadProprietyRoutes.js'
+
 import paymentRoutes from './routes/paymentRoutes.js'
 dotenv.config()
 connectDB()
@@ -27,13 +29,23 @@ app.use('/api/form', contactRoute)
 app.use('/api/form/contact', contactRoute)
 app.use('/api/form/submit-application', contactRoute)
 app.use('/api/form/submit-maintenance', contactRoute)
-
-
 app.use(`/api/upload`, uploadRoutes)
+app.use(`/api/uploadPropriety`, uploadProprietyRoutes)
+
 app.use('/api/payment-details', paymentRoutes)
 // app.get('/api/config/paypal', (req, res) =>
 //   res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
 // )
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'frontend/build')))
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+  )
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running....')
+  })
+}
 const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 app.use(notFound)
