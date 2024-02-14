@@ -41,6 +41,7 @@ import ProprietyList from './pages/ProprietyListAdmin';
 import MaintenanceRequestForm from './pages/MaintenanceRequestForm';
 import ProprietyListAdmin from './pages/ProprietyListAdmin';
 import ProprietyAdminEdit from './pages/ProprietyAdminEdit';
+import About from './components/About';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
@@ -49,6 +50,8 @@ const router = createBrowserRouter(
       <Route path='/product/:id' element={<SingleProperties />} />
       <Route path='/contact/:id' element={<Contact />} />
       <Route path='/contact' element={<FormContact />} />
+      <Route path='/about' element={<About />} />
+
       <Route path='/apply/:id' element={<Apply />} />
       <Route path='/rental-application' element={<Application />} />
       <Route path='/where-youve-lived' element={<ApplicationTwo />} />

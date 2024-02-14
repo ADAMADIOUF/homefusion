@@ -1,98 +1,213 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { toggleMenu } from '../slices/toggleSlice'
-import { FaBars, FaUser } from 'react-icons/fa' 
-import { FaTimes } from 'react-icons/fa'
-import logo from "../assets/logo.png"
-import { Link, useNavigate } from 'react-router-dom'
-import { logout } from '../slices/authSlice'
-
 import { useLogoutMutation } from '../slices/usersApiSlice'
+import { logout } from '../slices/authSlice'
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
+import { FaBars, FaTimes } from 'react-icons/fa'
+import { animateScroll as scroll } from 'react-scroll'
+import { AiFillCar, AiFillHome } from 'react-icons/ai'
+import { useDispatch, useSelector } from 'react-redux'
+import logo from '../assets/logo.png'
 const Navbar = () => {
-  const isMenuOpen = useSelector((state) => state.toggle.isMenuOpen)
-  const handleToggleMenu = () => {
-    dispatch(toggleMenu())
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [isMenuOpen, setMenuOpen] = useState(false)
+  const userInfo = useSelector((state) => state.auth.userInfo)
+
+  const toggleMenu = () => {
+    setMenuOpen(!isMenuOpen)
   }
-const navigate = useNavigate()
-const dispatch = useDispatch()
-const { userInfo } = useSelector((state) => state.auth)
+
+  const handleItemClick = () => {
+    setMenuOpen(false)
+  }
+
+  const scrollToTop = () => {
+    scroll.scrollToTop()
+  }
 const [logoutApiCall] = useLogoutMutation()
-const logoutHandler = async () => {
-  try {
-    await logoutApiCall().unwrap()
-    dispatch(logout())
-    navigate(`/login`)
-  } catch (error) {
-    console.log(error)
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap()
+      dispatch(logout())
+      navigate(`/login`)
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
-  
 
   return (
-    <nav>
-      <div className='logo'>
-        <Link to={`/`}>
-          <img src={logo} alt='Logo' />
-        </Link>
-      </div>
-      <ul>
-        <li>About</li>
-        <li>
-          <Link to={`/contact`}>Contact</Link>
-        </li>
-        <li>
-          <Link to={`/properties`}>Properties</Link>
-        </li>
-      </ul>
-      <div className={`menu ${isMenuOpen ? 'active' : ''}`}>
-        {userInfo ? (
-          <div className='navbar__dropdown'>
-            <div className='navbar__username'>{userInfo?.firstName}</div>
-            <ul className='navbar__dropdown-menu'>
-              <li>
-                <Link to='/profile'>Profile</Link>
-              </li>
-              <li>
-                <Link to='/payment'>Payment</Link>
-              </li>
-              <li>
-                <Link to='/maintenance'>MaintenanceRequest</Link>
-              </li>
-              <li onClick={logoutHandler}>Logout</li>
-            </ul>
+    <nav className='navbar'>
+      <div className='nav-header'>
+        <RouterLink
+          to='/'
+          onClick={() => {
+            scrollToTop()
+            handleItemClick()
+          }}
+        >
+          <div className='logo'>
+            <h3>
+              <span className='logo-icon'>
+                HOMEFUSION <AiFillHome />
+              </span>
+            </h3>
           </div>
-        ) : (
-          <Link to='/login' className='navbar__sign-in'>
-            <FaUser /> Sign In
-          </Link>
-        )}
-      </div>
+        </RouterLink>
 
-      {userInfo && userInfo.isAdmin && (
-        <div className='admin-dropdown'>
-          <button className='dropdown-toggle'>Admin</button>
-          <ul className='dropdown-menu' id='adminmenu'>
-            <li>
-              <Link to='/admin/proprietyList' className='dropdown-item'>
-                ProprietyList
-              </Link>
-            </li>
-            <li>
-              <Link to='/admin/orderlist' className='dropdown-item'>
-                Orders
-              </Link>
-            </li>
-            <li>
-              <Link to='/admin/userlist' className='dropdown-item'>
-                Users
-              </Link>
-            </li>
-          </ul>
+        <div className='menu-icon' onClick={toggleMenu}>
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
         </div>
-      )}
 
-      <div className='hamburger' onClick={handleToggleMenu}>
-        {isMenuOpen ? <FaTimes /> : <FaBars />}
+        <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+          <li className='nav-item'>
+            <RouterLink
+              to='/'
+              onClick={() => {
+                scrollToTop()
+                handleItemClick()
+              }}
+              className={location.pathname === '/' ? 'active-link' : ''}
+            >
+              Home
+            </RouterLink>
+          </li>
+          <li className='nav-item'>
+            <RouterLink
+              to='/about'
+              onClick={() => {
+                scrollToTop()
+                handleItemClick()
+              }}
+              className={location.pathname === '/about' ? 'active-link' : ''}
+            >
+              About
+            </RouterLink>
+          </li>
+          <li className='nav-item'>
+            <RouterLink
+              to='/maintenance'
+              onClick={() => {
+                scrollToTop()
+                handleItemClick()
+              }}
+              className={location.pathname === '/services' ? 'active-link' : ''}
+            >
+              Maintenance Request
+            </RouterLink>
+          </li>
+          <li className='nav-item'>
+            <RouterLink
+              to='/contact'
+              onClick={() => {
+                scrollToTop()
+                handleItemClick()
+              }}
+              className={location.pathname === '/contact' ? 'active-link' : ''}
+            >
+              Contact
+            </RouterLink>
+          </li>
+          {userInfo ? (
+            <>
+              <li className='nav-item'>
+                <RouterLink
+                  to='/profile'
+                  onClick={() => {
+                    scrollToTop()
+                    handleItemClick()
+                  }}
+                  className={
+                    location.pathname === '/profile' ? 'active-link' : ''
+                  }
+                >
+                  Profile
+                </RouterLink>
+              </li>
+              <li className='nav-item'>
+                <RouterLink
+                  to='/payment'
+                  onClick={() => {
+                    scrollToTop()
+                    handleItemClick()
+                  }}
+                  className={
+                    location.pathname === '/payment' ? 'active-link' : ''
+                  }
+                >
+                  Payment
+                </RouterLink>
+              </li>
+              <li className='nav-item' onClick={logoutHandler}>
+                Logout
+              </li>
+            </>
+          ) : (
+            <li className='nav-item'>
+              <RouterLink
+                to='/login'
+                onClick={() => {
+                  scrollToTop()
+                  handleItemClick()
+                }}
+                className={location.pathname === '/login' ? 'active-link' : ''}
+              >
+                Login
+              </RouterLink>
+            </li>
+          )}
+          {userInfo && userInfo.isAdmin && (
+            <div className='admin-dropdown'>
+              <button
+                className='dropdown-toggle'
+                onClick={() => {
+                  scrollToTop()
+                  handleItemClick()
+                }}
+              >
+                Admin
+              </button>
+              <ul className='dropdown-menu' id='adminmenu'>
+                <li className='nav-item'>
+                  <RouterLink
+                    to='/admin/proprietyList'
+                    className='dropdown-item'
+                    onClick={() => {
+                      scrollToTop()
+                      handleItemClick()
+                    }}
+                  >
+                    PropertyList
+                  </RouterLink>
+                </li>
+                <li className='nav-item'>
+                  <RouterLink
+                    to='/admin/orderList'
+                    className='dropdown-item'
+                    onClick={() => {
+                      scrollToTop()
+                      handleItemClick()
+                    }}
+                  >
+                    Orders
+                  </RouterLink>
+                </li>
+                <li className='nav-item'>
+                  <RouterLink
+                    to='/admin/userList'
+                    className='dropdown-item'
+                    onClick={() => {
+                      scrollToTop()
+                      handleItemClick()
+                    }}
+                  >
+                    Users
+                  </RouterLink>
+                </li>
+              </ul>
+            </div>
+          )}
+        </ul>
       </div>
     </nav>
   )

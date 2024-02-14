@@ -1,145 +1,108 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useGetPropertiesQuery } from '../slices/proprietiesApiSlice'
-import mapboxgl from 'mapbox-gl'
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleMenu } from '../slices/toggleSlice';
+import { FaBars, FaUser, FaTimes } from 'react-icons/fa';
+import logo from '../assets/logo.png';
+import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../slices/authSlice';
+import { useLogoutMutation } from '../slices/usersApiSlice';
 
-const MAPBOX_ACCESS_TOKEN =
-  'pk.eyJ1IjoiYWR6byIsImEiOiJjbGxuM3I4bDAxamY3M2Zta3g1bDFzcW1uIn0.ZGeKPPGll20CXvCugc0fwQ'
+const Navbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userInfo } = useSelector((state) => state.auth);
+  const isMenuOpen = useSelector((state) => state.toggle.isMenuOpen);
 
-const Properties = () => {
-  const { data: properties, isLoading, error } = useGetPropertiesQuery()
-  const mapContainerRef = useRef(null)
-  const mapRef = useRef(null)
-  const markersRef = useRef([])
-  const [filteredProperty, setFilteredProperty] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
+  const handleToggleMenu = () => {
+    dispatch(toggleMenu());
+  };
 
-  useEffect(() => {
-    if (!mapRef.current && properties && properties.length > 0) {
-      const firstProperty = properties[0]
-      const center = [
-        firstProperty.location.coordinates[0],
-        firstProperty.location.coordinates[1],
-      ]
+  const [logoutApiCall] = useLogoutMutation();
 
-      if (mapContainerRef.current) {
-        mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN
-
-        const map = new mapboxgl.Map({
-          container: mapContainerRef.current,
-          style: 'mapbox://styles/mapbox/streets-v11',
-          center,
-          zoom: 10,
-        })
-
-        mapRef.current = map
-
-        markersRef.current = properties.map((property) => {
-          const { longitude, latitude, title } = property
-
-          if (!isNaN(longitude) && !isNaN(latitude)) {
-            const marker = new mapboxgl.Marker()
-              .setLngLat([longitude, latitude])
-              .addTo(mapRef.current)
-
-            marker.getElement().addEventListener('click', () => {
-              console.log(`Marker clicked for property: ${title}`)
-              setFilteredProperty(property)
-            })
-
-            return marker
-          } else {
-            console.error(`Invalid coordinates for property: ${title}`)
-            return null
-          }
-        })
-
-        const geocoder = new MapboxGeocoder({
-          accessToken: mapboxgl.accessToken,
-          mapboxgl: mapboxgl,
-          marker: false,
-        })
-
-        mapRef.current.addControl(geocoder)
-
-        geocoder.on('result', (e) => {
-          const selectedAddress = e.result.text
-          setSearchQuery(selectedAddress)
-        })
-      }
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate(`/login`);
+    } catch (error) {
+      console.log(error);
     }
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove()
-        mapRef.current = null
-      }
-    }
-  }, [properties])
-
-  const filteredProperties = properties.filter((property) =>
-    property.address.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const handleShowAllProperties = () => {
-    setFilteredProperty(null)
-    setSearchQuery('')
-    markersRef.current.forEach((marker) => marker.addTo(mapRef.current))
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>
-  }
+  };
 
   return (
-    <>
-      {filteredProperty ? (
-        <div className='selected-property'>
-          <h4>{filteredProperty.title}</h4>
-          <p>Type: {filteredProperty.type}</p>
-          <p>{filteredProperty.bedrooms} bedrooms</p>
-          <p>{filteredProperty.bathrooms} bathrooms</p>
-          <p>Address: {filteredProperty.address}</p>
-          <button onClick={handleShowAllProperties}>Show All Properties</button>
+    <nav className='navbar'>
+      <div className='nav-center'>
+        <div className='logo'>
+          <Link to={`/`}>
+            <img src={logo} alt='Logo' />
+          </Link>
         </div>
-      ) : (
-        <>
-          <div className='properties-container'>
-            {filteredProperties.length > 0 ? (
-              filteredProperties.map((property) => (
-                <div key={property._id} className='property-item'>
-                  <img
-                    src={property.images[0]}
-                    alt=''
-                    className='img-property'
-                  />
-                  <h4>{property.title}</h4>
-                  <p>Type: {property.type}</p>
-                  <p>{property.bedrooms} bedrooms</p>
-                  <p>{property.bathrooms} bathrooms</p>
-                  <p>Address: {property.address}</p>
-                </div>
-              ))
+        <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+          <li>
+            <Link to={`/about`}>About</Link>
+          </li>
+          <li>
+            <Link to={`/contact`}>Contact</Link>
+          </li>
+          <li>
+            <Link to={`/properties`}>Properties</Link>
+          </li>
+        </ul>
+        <div className={`menu ${isMenuOpen ? 'active' : ''}`}>
+          <div>
+            {userInfo ? (
+              <div className='navbar__dropdown'>
+                <div className='navbar__username'>{userInfo?.firstName}</div>
+                <ul className='navbar__dropdown-menu'>
+                  <li>
+                    <Link to='/profile'>Profile</Link>
+                  </li>
+                  <li>
+                    <Link to='/payment'>Payment</Link>
+                  </li>
+                  <li>
+                    <Link to='/maintenance'>Maintenance Request</Link>
+                  </li>
+                  <li onClick={logoutHandler}>Logout</li>
+                </ul>
+              </div>
             ) : (
-              <div>
-                <p>No properties found for "{searchQuery}".</p>
-                <Link to='/properties'>Go Back</Link>
+              <Link to='/login' className='navbar__sign-in'>
+                <FaUser /> Sign In
+              </Link>
+            )}
+          </div>
+          <div>
+            {userInfo && userInfo.isAdmin && (
+              <div className='admin-dropdown'>
+                <button className='dropdown-toggle'>Admin</button>
+                <ul className='dropdown-menu' id='adminmenu'>
+                  <li>
+                    <Link to='/admin/propertyList' className='dropdown-item'>
+                      PropertyList
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to='/admin/orderList' className='dropdown-item'>
+                      Orders
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to='/admin/userList' className='dropdown-item'>
+                      Users
+                    </Link>
+                  </li>
+                </ul>
               </div>
             )}
           </div>
-          <div
-            ref={mapContainerRef}
-            style={{ width: '100%', height: '500px' }}
-          />
-        </>
-      )}
-    </>
-  )
-}
+        </div>
+        <div className='hamburger' onClick={handleToggleMenu}>
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </div>
+      </div>
+    </nav>
+  );
+};
 
-export default Properties
+export default Navbar;
