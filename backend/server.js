@@ -33,9 +33,9 @@ app.use(`/api/upload`, uploadRoutes)
 app.use(`/api/uploadPropriety`, uploadProprietyRoutes)
 
 app.use('/api/payment-details', paymentRoutes)
-// app.get('/api/config/paypal', (req, res) =>
-//   res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
-// )
+app.get('/api/config/paypal', (req, res) =>
+  res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
+)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'frontend/build')))
   app.get('*', (req, res) =>
