@@ -1,48 +1,14 @@
 
+
 import asyncHandler from '../middleware/asyncHandler.js'
 import Property from '../models/PropertyModel.js'
-const createProperty = asyncHandler(async (req, res) => {
-  const {
-    title,
-    description,
-    price,
-    location,
-    bedrooms,
-    bathrooms,
-    area,
-    type,
-    status,
-    images,
-    agent,
-    coordinates,
-    featured,
-  } = req.body
+import geocoder from '../geocoder.js'
 
-  const property = new Property({
-    title,
-    description,
-    price,
-    location,
-    bedrooms,
-    bathrooms,
-    area,
-    type,
-    status,
-    images,
-    agent,
-    coordinates,
-    featured,
-  })
 
-  try {
-    const createdProperty = await property.save()
-    res.status(201).json(createdProperty)
-  } catch (error) {
-    res
-      .status(400)
-      .json({ message: 'Property creation failed', error: error.message })
-  }
-})
+// @desc    Create a new property
+// @route   POST /api/properties
+// @access  Public (you may want to change this based on your authentication logic)
+
 // @desc    Get all properties
 // @route   GET /api/properties
 // @access  Public
@@ -64,5 +30,68 @@ const getPropertyById = asyncHandler(async (req, res) => {
     throw new Error('Property not found')
   }
 })
+// @desc    Create a new property
+// @route   POST /api/properties
+// @access  Public (you may want to change this based on your authentication logic)
+const createProperty = asyncHandler(async (req, res) => {
+  const {
+    title,
+    description,
+    price,
+    bedrooms,
+    bathrooms,
+    area,
+    type,
+    status,
+    images,
+    featured,
+    address,
+  } = req.body
 
-export { getProperties, getPropertyById, createProperty }
+  try {
+    const property = new Property({
+      title,
+      description,
+      price,
+      bedrooms,
+      bathrooms,
+      area,
+      type,
+      status,
+      images,
+      featured,
+
+      address,
+    })
+
+    const createdProperty = await property.save()
+    const { street, city, zipcode, country } = createdProperty.location
+
+    
+    const responseData = {
+      ...createdProperty.toObject(), 
+      address: `${street}, ${city}, ${zipcode}, ${country}`,
+    }
+
+    res.status(201).json({ success: true, data: responseData })
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: error.message || 'Internal Server Error',
+      })
+  }
+})
+
+const deletePropriety = asyncHandler(async (req, res) => {
+  const propriety = await Property.findById(req.params.id)
+  if (propriety) {
+    await Property.deleteOne({ _id: propriety._id })
+    res.status(200).json({ message: 'Product deleted' })
+  } else {
+    res.status(404)
+    throw new Error('Resource not found')
+  }
+})
+export { getProperties, getPropertyById, createProperty,deletePropriety }

@@ -1,9 +1,11 @@
 import React from 'react'
 import { useGetPropertiesQuery } from '../slices/proprietiesApiSlice'
+import Tenant from './Tenant';
+import { Link } from 'react-router-dom';
 
 const Featured = () => {
   const { data: properties, isLoading, error } = useGetPropertiesQuery()
-
+console.log(properties);
   if (isLoading) {
     return <div>Loading...</div>
   }
@@ -12,7 +14,7 @@ const Featured = () => {
     return <div>Error: {error.message}</div>
   }
 
-  // Filter to only include properties where featured is true
+  
   const featuredProperties = properties.filter((property) => property.featured)
 
   return (
@@ -23,13 +25,18 @@ const Featured = () => {
       <div className='featured-list'>
         {featuredProperties.map((property) => (
           <div key={property._id} className='featured-item'>
-            <img src={property.images[0]} alt={property.title} />
-            <h4>{property.title}</h4>
-            <p>{property.location}</p>
-            <p>Type: {property.type}</p>
+            <p>
+              <Link to={`/product/${property._id}`}>
+                <img src={property.images[0]} alt={property.title} />
+                <h4>{property.title}</h4>
+                <p>Address: {property.address}</p>
+                <p>Type: {property.type}</p>
+              </Link>
+            </p>
           </div>
         ))}
       </div>
+      <Tenant />
     </div>
   )
 }

@@ -1,0 +1,145 @@
+import React, { useEffect, useRef, useState } from 'react'
+import { useGetPropertiesQuery } from '../slices/proprietiesApiSlice'
+import mapboxgl from 'mapbox-gl'
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
+import { Link } from 'react-router-dom'
+
+const MAPBOX_ACCESS_TOKEN =
+  'pk.eyJ1IjoiYWR6byIsImEiOiJjbGxuM3I4bDAxamY3M2Zta3g1bDFzcW1uIn0.ZGeKPPGll20CXvCugc0fwQ'
+
+const Properties = () => {
+  const { data: properties, isLoading, error } = useGetPropertiesQuery()
+  const mapContainerRef = useRef(null)
+  const mapRef = useRef(null)
+  const markersRef = useRef([])
+  const [filteredProperty, setFilteredProperty] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    if (!mapRef.current && properties && properties.length > 0) {
+      const firstProperty = properties[0]
+      const center = [
+        firstProperty.location.coordinates[0],
+        firstProperty.location.coordinates[1],
+      ]
+
+      if (mapContainerRef.current) {
+        mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN
+
+        const map = new mapboxgl.Map({
+          container: mapContainerRef.current,
+          style: 'mapbox://styles/mapbox/streets-v11',
+          center,
+          zoom: 10,
+        })
+
+        mapRef.current = map
+
+        markersRef.current = properties.map((property) => {
+          const { longitude, latitude, title } = property
+
+          if (!isNaN(longitude) && !isNaN(latitude)) {
+            const marker = new mapboxgl.Marker()
+              .setLngLat([longitude, latitude])
+              .addTo(mapRef.current)
+
+            marker.getElement().addEventListener('click', () => {
+              console.log(`Marker clicked for property: ${title}`)
+              setFilteredProperty(property)
+            })
+
+            return marker
+          } else {
+            console.error(`Invalid coordinates for property: ${title}`)
+            return null
+          }
+        })
+
+        const geocoder = new MapboxGeocoder({
+          accessToken: mapboxgl.accessToken,
+          mapboxgl: mapboxgl,
+          marker: false,
+        })
+
+        mapRef.current.addControl(geocoder)
+
+        geocoder.on('result', (e) => {
+          const selectedAddress = e.result.text
+          setSearchQuery(selectedAddress)
+        })
+      }
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
+      }
+    }
+  }, [properties])
+
+  const filteredProperties = properties.filter((property) =>
+    property.address.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const handleShowAllProperties = () => {
+    setFilteredProperty(null)
+    setSearchQuery('')
+    markersRef.current.forEach((marker) => marker.addTo(mapRef.current))
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>
+  }
+
+  return (
+    <>
+      {filteredProperty ? (
+        <div className='selected-property'>
+          <h4>{filteredProperty.title}</h4>
+          <p>Type: {filteredProperty.type}</p>
+          <p>{filteredProperty.bedrooms} bedrooms</p>
+          <p>{filteredProperty.bathrooms} bathrooms</p>
+          <p>Address: {filteredProperty.address}</p>
+          <button onClick={handleShowAllProperties}>Show All Properties</button>
+        </div>
+      ) : (
+        <>
+          <div className='properties-container'>
+            {filteredProperties.length > 0 ? (
+              filteredProperties.map((property) => (
+                <div key={property._id} className='property-item'>
+                  <img
+                    src={property.images[0]}
+                    alt=''
+                    className='img-property'
+                  />
+                  <h4>{property.title}</h4>
+                  <p>Type: {property.type}</p>
+                  <p>{property.bedrooms} bedrooms</p>
+                  <p>{property.bathrooms} bathrooms</p>
+                  <p>Address: {property.address}</p>
+                </div>
+              ))
+            ) : (
+              <div>
+                <p>No properties found for "{searchQuery}".</p>
+                <Link to='/properties'>Go Back</Link>
+              </div>
+            )}
+          </div>
+          <div
+            ref={mapContainerRef}
+            style={{ width: '100%', height: '500px' }}
+          />
+        </>
+      )}
+    </>
+  )
+}
+
+export default Properties
