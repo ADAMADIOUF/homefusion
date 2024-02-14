@@ -31,11 +31,14 @@ app.use('/api/form/submit-application', contactRoute)
 app.use('/api/form/submit-maintenance', contactRoute)
 app.use(`/api/upload`, uploadRoutes)
 app.use(`/api/uploadPropriety`, uploadProprietyRoutes)
-
-app.use('/api/payment-details', paymentRoutes)
 app.get('/api/config/paypal', (req, res) =>
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
 )
+app.use('/api/payment-details', paymentRoutes)
+
+const __dirname = path.resolve()
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'frontend/build')))
   app.get('*', (req, res) =>
@@ -46,8 +49,7 @@ if (process.env.NODE_ENV === 'production') {
     res.send('API is running....')
   })
 }
-const __dirname = path.resolve()
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
+
 app.use(notFound)
 app.use(errorHandler)
 app.listen(port,(console.log(`The server running at port ${port}`)))
