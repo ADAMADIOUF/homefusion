@@ -18,10 +18,11 @@ const Dashboard = ({ paymentInfo }) => {
         and other important information.
       </p>
       <div>
-        {paymentInfo && paymentInfo.amount ? (
-          <p>Payment total: {paymentInfo.amount}</p>
-        ) : (
-          <p>No payment information available</p>
+        {paymentInfo && ( // Check if paymentInfo exists
+          <p>
+            Thank you, {paymentInfo.payerName}, your payment of $
+            {paymentInfo.amount} was successful! Order ID: {paymentInfo.orderId}
+          </p>
         )}
       </div>
     </div>

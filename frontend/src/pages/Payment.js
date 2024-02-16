@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PayPalButton from './PayPalButton'
 import { useSelector } from 'react-redux'
 import { useSavePaymentDetailsMutation } from '../slices/proprietiesApiSlice'
+import Dashboard from './Dashboard'
 
 const Payment = () => {
   const [selectedPrice, setSelectedPrice] = useState(null)
@@ -110,6 +111,7 @@ const Payment = () => {
         </article>
       </div>
       <div className='gift-big-img'></div>
+      <Dashboard paymentInfo={paymentInfo} />
     </div>
   )
 }

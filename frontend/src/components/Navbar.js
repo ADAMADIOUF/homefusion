@@ -4,9 +4,8 @@ import { logout } from '../slices/authSlice'
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 import { FaBars, FaTimes } from 'react-icons/fa'
 import { animateScroll as scroll } from 'react-scroll'
-import { AiFillCar, AiFillHome } from 'react-icons/ai'
+import {  AiFillHome } from 'react-icons/ai'
 import { useDispatch, useSelector } from 'react-redux'
-import logo from '../assets/logo.png'
 const Navbar = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -21,7 +20,6 @@ const Navbar = () => {
   const handleItemClick = () => {
     setMenuOpen(false)
   }
-
   const scrollToTop = () => {
     scroll.scrollToTop()
   }
