@@ -84,18 +84,7 @@ const [logoutApiCall] = useLogoutMutation()
               About
             </RouterLink>
           </li>
-          <li className='nav-item'>
-            <RouterLink
-              to='/maintenance'
-              onClick={() => {
-                scrollToTop()
-                handleItemClick()
-              }}
-              className={location.pathname === '/services' ? 'active-link' : ''}
-            >
-              Maintenance Request
-            </RouterLink>
-          </li>
+
           <li className='nav-item'>
             <RouterLink
               to='/contact'
@@ -136,6 +125,20 @@ const [logoutApiCall] = useLogoutMutation()
                   }
                 >
                   Payment
+                </RouterLink>
+              </li>
+              <li className='nav-item'>
+                <RouterLink
+                  to='/maintenance'
+                  onClick={() => {
+                    scrollToTop()
+                    handleItemClick()
+                  }}
+                  className={
+                    location.pathname === '/services' ? 'active-link' : ''
+                  }
+                >
+                  Maintenance Request
                 </RouterLink>
               </li>
               <li className='nav-item' onClick={logoutHandler}>

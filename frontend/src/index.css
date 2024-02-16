@@ -178,6 +178,7 @@ p {
 
 .nav-item {
   list-style: none;
+  cursor: pointer;
 }
 .nav-item a{
   color: var(--clr-primary-1);
