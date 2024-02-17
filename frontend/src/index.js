@@ -37,11 +37,12 @@ import Payment from './pages/Payment';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
-import ProprietyList from './pages/ProprietyListAdmin';
 import MaintenanceRequestForm from './pages/MaintenanceRequestForm';
 import ProprietyListAdmin from './pages/ProprietyListAdmin';
 import ProprietyAdminEdit from './pages/ProprietyAdminEdit';
 import About from './components/About';
+import ResetPassword, { ForgotPasswordForm } from './pages/ResetPassword';
+import ForgotPassword from './pages/ForgetPassword';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
@@ -66,7 +67,8 @@ const router = createBrowserRouter(
       <Route path='/review-confirm' element={<ReviewAndConfirm />} />
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
-
+      <Route path='/forgotpassword' element={<ForgotPassword />} />
+      <Route path='/resetpassword/:token' element={<ResetPassword />} />
       <Route path='' element={<PrivateRoute />}>
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<Profile />} />
