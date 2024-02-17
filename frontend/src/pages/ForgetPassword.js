@@ -4,11 +4,15 @@ import { useForgotPasswordMutation } from '../slices/usersApiSlice'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('')
-  const [forgotPassword, { isLoading }] = useForgotPasswordMutation()
-
+  const [forgotPassword, { isLoading,isError }] = useForgotPasswordMutation()
+const [isFormSubmitted, setIsFormSubmitted] = useState(false)
   const handleSubmit = async (e) => {
     e.preventDefault()
     await forgotPassword({ email })
+     setIsFormSubmitted(true)
+     setTimeout(() => {
+       setIsFormSubmitted(false)
+     }, 5000)
     // Handle response, show notification, etc.
   }
 
@@ -23,6 +27,11 @@ const ForgotPassword = () => {
       <button type='submit' disabled={isLoading}>
         Submit
       </button>
+      {isFormSubmitted && !isError && (
+        <p className='success-message'>
+          Message sent successfully! We will respond to you soon.
+        </p>
+      )}
     </form>
   )
 }
