@@ -11,7 +11,6 @@ const maintenanceSchema = new mongoose.Schema({
 })
 
 maintenanceSchema.post('save', async function (doc) {
-  
   const emailSubject = 'Request Maintenance'
   const emailText = `A new form data entry has been submitted:\n\nFirst Name: ${doc.firstName}\nLast Name: ${doc.lastName}\nPhone: ${doc.phone}\nAddress: ${doc.address}\nSubject : ${doc.subject}\nDescription: ${doc.description}`
   const emailRecipient = 'adamadiouf2017@gmail.com'
